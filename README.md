@@ -6,7 +6,7 @@ A new Flutter application.
 
 This project is a starting point for a Flutter application.
 
-![Demo](https://media.giphy.com/media/h59bgKAEsivkS2BxAl/source.gif)
+![Demo](https://media.giphy.com/media/h59bgKAEsivkS2BxAl/giphy.gif)
 
 A few resources to get you started if this is your first Flutter project:
 
