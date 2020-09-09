@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         mainKey.currentState.showSnackBar(SnackBar(
           content: Text(
-            (result as ErrorState).msg,
+            (result as ErrorState).msg.message,
           ),
           duration: Duration(seconds: 4),
         ));

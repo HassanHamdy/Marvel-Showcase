@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:movies_showcase/models/character_model/character_api_response.dart';
 import 'package:movies_showcase/models/related_data_model/related_data_api_response.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../models/error_response.dart';
 import 'result.dart';
@@ -79,7 +78,7 @@ class NetworkClient {
       }
     } catch (error) {
       print("ERROR $error");
-      return Result.error(ErrorResponse(message: "Code error"));
+      return Result.error(ErrorResponse(message: "Code error $error"));
     }
   }
 

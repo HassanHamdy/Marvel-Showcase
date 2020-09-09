@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:movies_showcase/models/related_data_model/related_data_api_response.dart';
 import 'package:movies_showcase/models/related_data_model/related_data_result.dart';
 import 'package:movies_showcase/networking/network_client.dart';
 import 'package:movies_showcase/networking/result.dart';
@@ -30,11 +29,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
         setState(() {
           _comics = result.value.data.results;
         });
-      }
-      else {
+      } else {
         mainKey.currentState.showSnackBar(SnackBar(
           content: Text(
-            (result as ErrorState).msg,
+            (result as ErrorState).msg.message,
           ),
           duration: Duration(seconds: 4),
         ));
@@ -46,11 +44,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
         setState(() {
           _events = result.value.data.results;
         });
-      }
-      else {
+      } else {
         mainKey.currentState.showSnackBar(SnackBar(
           content: Text(
-            (result as ErrorState).msg,
+            (result as ErrorState).msg.message,
           ),
           duration: Duration(seconds: 4),
         ));
@@ -62,11 +59,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
         setState(() {
           _series = result.value.data.results;
         });
-      }
-      else {
+      } else {
         mainKey.currentState.showSnackBar(SnackBar(
           content: Text(
-            (result as ErrorState).msg,
+            (result as ErrorState).msg.message,
           ),
           duration: Duration(seconds: 4),
         ));
@@ -78,11 +74,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
         setState(() {
           _stories = result.value.data.results;
         });
-      }
-      else {
+      } else {
         mainKey.currentState.showSnackBar(SnackBar(
           content: Text(
-            (result as ErrorState).msg,
+            (result as ErrorState).msg.message,
           ),
           duration: Duration(seconds: 4),
         ));
@@ -104,18 +99,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 imageUrl: widget.imagePath,
                 progressIndicatorBuilder: (context, url, downloadProgress) =>
                     Center(
-                      child: CircularProgressIndicator(
-                          value: downloadProgress.progress),
-                    ),
+                  child: CircularProgressIndicator(
+                      value: downloadProgress.progress),
+                ),
                 errorWidget: (context, url, error) =>
                     Center(child: Icon(Icons.error)),
               ),
               Container(
                 color: Colors.black26,
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
+                width: MediaQuery.of(context).size.width,
                 height: 200,
               ),
               InkWell(
@@ -134,7 +126,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
               )
             ],
           ),
-          DetailsHeader(name: "NAME",),
+          DetailsHeader(
+            name: "NAME",
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
@@ -162,39 +156,47 @@ class _DetailsScreenState extends State<DetailsScreen> {
           SizedBox(
             height: 16.0,
           ),
-          DetailsHeader(name: 'COMICS',),
-          _comics != null ? RelatedDataWidget(relatedDataList: _comics) :
-          Container(
-            height: 100.0,
-            child: Center(child: CircularProgressIndicator()),
+          DetailsHeader(
+            name: 'COMICS',
           ),
+          _comics != null
+              ? RelatedDataWidget(relatedDataList: _comics)
+              : Container(
+                  height: 100.0,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
           SizedBox(
             height: 16.0,
           ),
-          DetailsHeader(name: 'SERIES',),
-          _series != null ? RelatedDataWidget(relatedDataList: _series) :
-          Container(
-            height: 100.0,
-            child: Center(child: CircularProgressIndicator()),
+          DetailsHeader(
+            name: 'SERIES',
           ),
+          _series != null
+              ? RelatedDataWidget(relatedDataList: _series)
+              : Container(
+                  height: 100.0,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
           SizedBox(
             height: 16.0,
           ),
           DetailsHeader(name: 'STORIES'),
-          _stories != null ? RelatedDataWidget(relatedDataList: _stories) :
-          Container(
-            height: 100.0,
-            child: Center(child: CircularProgressIndicator()),
-          ),
+          _stories != null
+              ? RelatedDataWidget(relatedDataList: _stories)
+              : Container(
+                  height: 100.0,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
           SizedBox(
             height: 16.0,
           ),
           DetailsHeader(name: 'EVENTS'),
-          _events != null ? RelatedDataWidget(relatedDataList: _events) :
-          Container(
-            height: 100.0,
-            child: Center(child: CircularProgressIndicator()),
-          ),
+          _events != null
+              ? RelatedDataWidget(relatedDataList: _events)
+              : Container(
+                  height: 100.0,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
           SizedBox(
             height: 16.0,
           ),
@@ -208,7 +210,8 @@ class RelatedDataWidget extends StatelessWidget {
   const RelatedDataWidget({
     Key key,
     @required List<RelatedDataResult> relatedDataList,
-  }) : _relatedDataList = relatedDataList, super(key: key);
+  })  : _relatedDataList = relatedDataList,
+        super(key: key);
 
   final List<RelatedDataResult> _relatedDataList;
 
@@ -216,50 +219,50 @@ class RelatedDataWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 250.0,
-      child: _relatedDataList.isNotEmpty?Card(
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: _relatedDataList.length,
-          itemBuilder: (context, index) {
-            return Container(
-              width: 100.0,
-              padding: const EdgeInsets.only(left: 8.0, top: 16.0),
-              child: Column(
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: _relatedDataList[index].thumbnail != null?"${_relatedDataList[index].thumbnail
-                        .path}/portrait_fantastic.${_relatedDataList[index].thumbnail
-                        .extension}":"",
-                    progressIndicatorBuilder: (context, url,
-                        downloadProgress) =>
-                        Center(
-                          child: CircularProgressIndicator(
-                              value: downloadProgress.progress),
+      child: _relatedDataList.isNotEmpty
+          ? Card(
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _relatedDataList.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    width: 100.0,
+                    padding: const EdgeInsets.only(left: 8.0, top: 16.0),
+                    child: Column(
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: _relatedDataList[index].thumbnail != null
+                              ? "${_relatedDataList[index].thumbnail.path}/portrait_fantastic.${_relatedDataList[index].thumbnail.extension}"
+                              : "",
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Center(
+                            child: CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Center(child: Icon(Icons.error)),
                         ),
-                    errorWidget: (context, url, error) =>
-                        Center(child: Icon(Icons.error)),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      _relatedDataList[index].title,
-                      style: TextStyle(
-                          fontSize: 14.0,
-                          color: Colors.white
-                      ),
-                      softWrap: true,
-                      textAlign: TextAlign.center,
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            _relatedDataList[index].title,
+                            style:
+                                TextStyle(fontSize: 14.0, color: Colors.white),
+                            softWrap: true,
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      ],
                     ),
-                  )
-                ],
+                  );
+                },
               ),
-            );
-          },),
-      ):Center(
-          child: Text(
-            'No Data Available',
-            style: TextStyle(fontSize: 16.0),
-          )),
+            )
+          : Center(
+              child: Text(
+              'No Data Available',
+              style: TextStyle(fontSize: 16.0),
+            )),
     );
   }
 }
@@ -267,10 +270,7 @@ class RelatedDataWidget extends StatelessWidget {
 class DetailsHeader extends StatelessWidget {
   final String name;
 
-  const DetailsHeader({
-    Key key,
-    @required this.name
-  }) : super(key: key);
+  const DetailsHeader({Key key, @required this.name}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
