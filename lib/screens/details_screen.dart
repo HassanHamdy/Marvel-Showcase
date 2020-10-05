@@ -108,6 +108,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 children: [
                   CachedNetworkImage(
                     height: 200,
+                    width: MediaQuery.of(context).size.width,
                     imageUrl:
                         "${_character.thumbnail.path}/landscape_incredible.${_character.thumbnail.extension}",
                     progressIndicatorBuilder:

@@ -88,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   children: [
                                     CachedNetworkImage(
                                       height: 200,
+                                      width: MediaQuery.of(context).size.width,
                                       imageUrl:
                                           "${_characters[index].thumbnail.path}/landscape_incredible.${_characters[index].thumbnail.extension}",
                                       progressIndicatorBuilder:
