@@ -2,17 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:movies_showcase/models/character_model/character_result.dart';
 import 'package:movies_showcase/models/related_data_model/related_data_result.dart';
 import 'package:movies_showcase/networking/network_client.dart';
 import 'package:movies_showcase/networking/result.dart';
+import 'package:movies_showcase/scoped_models/marvel_model.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class DetailsScreen extends StatefulWidget {
-  final int marvelId;
-  final String name, description, imagePath;
+  final MarvelModel model;
 
-  const DetailsScreen(
-      {Key key, this.marvelId, this.name, this.description, this.imagePath})
-      : super(key: key);
+  const DetailsScreen({Key key, @required this.model}) : super(key: key);
 
   @override
   _DetailsScreenState createState() => _DetailsScreenState();
@@ -21,14 +21,17 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen> {
   final mainKey = GlobalKey<ScaffoldState>();
   List<RelatedDataResult> _comics, _events, _series, _stories;
+  CharacterResult _character;
 
   @override
   void initState() {
-    NetworkClient().getComics(widget.marvelId).then((result) {
+    _character = widget.model.getSingleCharacter();
+    NetworkClient().getComics(_character.id).then((result) {
       if (result is SuccessState) {
-        setState(() {
-          _comics = result.value.data.results;
-        });
+        widget.model.setComics(result.value.data.results);
+        // setState(() {
+        //   _comics = result.value.data.results;
+        // });
       } else {
         mainKey.currentState.showSnackBar(SnackBar(
           content: Text(
@@ -39,11 +42,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
       }
     });
 
-    NetworkClient().getEvents(widget.marvelId).then((result) {
+    NetworkClient().getEvents(_character.id).then((result) {
       if (result is SuccessState) {
-        setState(() {
-          _events = result.value.data.results;
-        });
+        widget.model.setEvents(result.value.data.results);
+        // setState(() {
+        //   _events = result.value.data.results;
+        // });
       } else {
         mainKey.currentState.showSnackBar(SnackBar(
           content: Text(
@@ -54,11 +58,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
       }
     });
 
-    NetworkClient().getSeries(widget.marvelId).then((result) {
+    NetworkClient().getSeries(_character.id).then((result) {
       if (result is SuccessState) {
-        setState(() {
-          _series = result.value.data.results;
-        });
+        widget.model.setSeries(result.value.data.results);
+        // setState(() {
+        //   _series = result.value.data.results;
+        // });
       } else {
         mainKey.currentState.showSnackBar(SnackBar(
           content: Text(
@@ -69,11 +74,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
       }
     });
 
-    NetworkClient().getStories(widget.marvelId).then((result) {
+    NetworkClient().getStories(_character.id).then((result) {
       if (result is SuccessState) {
-        setState(() {
-          _stories = result.value.data.results;
-        });
+        widget.model.setStories(result.value.data.results);
+        // setState(() {
+        //   _stories = result.value.data.results;
+        // });
       } else {
         mainKey.currentState.showSnackBar(SnackBar(
           content: Text(
@@ -88,120 +94,129 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: mainKey,
-      body: ListView(
-        children: [
-          Stack(
+    return ScopedModelDescendant<MarvelModel>(
+      builder: (context, child, model) {
+        _comics = model.getComics();
+        _events = model.getEvents();
+        _series = model.getSeries();
+        _stories = model.getStories();
+        return Scaffold(
+          key: mainKey,
+          body: ListView(
             children: [
-              CachedNetworkImage(
-                height: 200,
-                imageUrl: widget.imagePath,
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    Center(
-                  child: CircularProgressIndicator(
-                      value: downloadProgress.progress),
+              Stack(
+                children: [
+                  CachedNetworkImage(
+                    height: 200,
+                    imageUrl:
+                        "${_character.thumbnail.path}/landscape_incredible.${_character.thumbnail.extension}",
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => Center(
+                      child: CircularProgressIndicator(
+                          value: downloadProgress.progress),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        Center(child: Icon(Icons.error)),
+                  ),
+                  Container(
+                    color: Colors.black26,
+                    width: MediaQuery.of(context).size.width,
+                    height: 200,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 24.0, horizontal: 16.0),
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                        size: 22.0,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              DetailsHeader(
+                name: "NAME",
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  _character.name,
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
                 ),
-                errorWidget: (context, url, error) =>
-                    Center(child: Icon(Icons.error)),
               ),
-              Container(
-                color: Colors.black26,
-                width: MediaQuery.of(context).size.width,
-                height: 200,
+              SizedBox(
+                height: 16.0,
               ),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 24.0, horizontal: 16.0),
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.white,
-                    size: 22.0,
+              Visibility(
+                visible: _character.description.isNotEmpty,
+                child: DetailsHeader(name: 'DESCRIPTION'),
+              ),
+              Visibility(
+                visible: _character.description.isNotEmpty,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    _character.description,
+                    style: TextStyle(fontSize: 18.0, color: Colors.white),
                   ),
                 ),
-              )
+              ),
+              SizedBox(
+                height: 16.0,
+              ),
+              DetailsHeader(
+                name: 'COMICS',
+              ),
+              _comics != null
+                  ? RelatedDataWidget(relatedDataList: _comics)
+                  : Container(
+                      height: 100.0,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+              SizedBox(
+                height: 16.0,
+              ),
+              DetailsHeader(
+                name: 'SERIES',
+              ),
+              _series != null
+                  ? RelatedDataWidget(relatedDataList: _series)
+                  : Container(
+                      height: 100.0,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+              SizedBox(
+                height: 16.0,
+              ),
+              DetailsHeader(name: 'STORIES'),
+              _stories != null
+                  ? RelatedDataWidget(relatedDataList: _stories)
+                  : Container(
+                      height: 100.0,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+              SizedBox(
+                height: 16.0,
+              ),
+              DetailsHeader(name: 'EVENTS'),
+              _events != null
+                  ? RelatedDataWidget(relatedDataList: _events)
+                  : Container(
+                      height: 100.0,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+              SizedBox(
+                height: 16.0,
+              ),
             ],
           ),
-          DetailsHeader(
-            name: "NAME",
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              widget.name,
-              style: TextStyle(fontSize: 18.0, color: Colors.white),
-            ),
-          ),
-          SizedBox(
-            height: 16.0,
-          ),
-          Visibility(
-            visible: widget.description.isNotEmpty,
-            child: DetailsHeader(name: 'DESCRIPTION'),
-          ),
-          Visibility(
-            visible: widget.description.isNotEmpty,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                widget.description,
-                style: TextStyle(fontSize: 18.0, color: Colors.white),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 16.0,
-          ),
-          DetailsHeader(
-            name: 'COMICS',
-          ),
-          _comics != null
-              ? RelatedDataWidget(relatedDataList: _comics)
-              : Container(
-                  height: 100.0,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-          SizedBox(
-            height: 16.0,
-          ),
-          DetailsHeader(
-            name: 'SERIES',
-          ),
-          _series != null
-              ? RelatedDataWidget(relatedDataList: _series)
-              : Container(
-                  height: 100.0,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-          SizedBox(
-            height: 16.0,
-          ),
-          DetailsHeader(name: 'STORIES'),
-          _stories != null
-              ? RelatedDataWidget(relatedDataList: _stories)
-              : Container(
-                  height: 100.0,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-          SizedBox(
-            height: 16.0,
-          ),
-          DetailsHeader(name: 'EVENTS'),
-          _events != null
-              ? RelatedDataWidget(relatedDataList: _events)
-              : Container(
-                  height: 100.0,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-          SizedBox(
-            height: 16.0,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

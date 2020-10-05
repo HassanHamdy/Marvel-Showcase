@@ -22,7 +22,6 @@ class NetworkClient {
       @required String path,
       dynamic parameter,
       Map<String, String> authHeader}) async {
-
     //request header
     var header = {
       "Content-Type": "application/json",
@@ -49,7 +48,7 @@ class NetworkClient {
     try {
       final response =
           await _request(requestType: RequestType.GET, path: "characters");
-
+      print(response.body);
       if (response.statusCode == 200) {
         return Result<CharacterApiResponse>.success(
             CharacterApiResponse.fromJson(json.decode(response.body)),
