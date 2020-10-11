@@ -1,17 +1,19 @@
-import 'character_result_info.dart';
+import 'package:movies_showcase/models/api_data_response.dart';
 
-class CharacterApiResponse {
-  int code;
+class ApiResponse <T>{
+  dynamic code;
   String status;
-  CharacterResultInfo data;
+  String message;
+  ApiDataResponse<T> data;
 
-  CharacterApiResponse({this.code, this.status, this.data});
+  ApiResponse({this.code, this.status, this.data, this.message});
 
-  CharacterApiResponse.fromJson(Map<String, dynamic> json) {
+  ApiResponse.fromJson(Map<String, dynamic> json) {
     code = json['code'];
     status = json['status'];
+    message = json['message'];
     data = json['data'] != null
-        ? new CharacterResultInfo.fromJson(json['data'])
+        ? new ApiDataResponse<T>.fromJson(json['data'])
         : null;
   }
 
@@ -19,6 +21,7 @@ class CharacterApiResponse {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['code'] = this.code;
     data['status'] = this.status;
+    data['message'] = this.message;
     if (this.data != null) {
       data['data'] = this.data.toJson();
     }

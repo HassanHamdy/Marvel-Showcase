@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:movies_showcase/models/related_data_model/related_data_result.dart';
-import 'package:movies_showcase/networking/network_client.dart';
-import 'package:movies_showcase/networking/result.dart';
+import 'package:movies_showcase/models/api_response.dart';
+import 'package:movies_showcase/models/related_data_model/related_data_model.dart';
+import 'package:movies_showcase/services/bloc.dart';
+import 'package:movies_showcase/services/network_client.dart';
+import 'package:movies_showcase/services/result.dart';
 
 class DetailsScreen extends StatefulWidget {
   final int marvelId;
@@ -20,74 +23,19 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   final mainKey = GlobalKey<ScaffoldState>();
-  List<RelatedDataResult> _comics, _events, _series, _stories;
+  List<RelatedDataModel> _comics, _events, _series, _stories;
 
   @override
   void initState() {
-    NetworkClient().getComics(widget.marvelId).then((result) {
-      if (result is SuccessState) {
-        setState(() {
-          _comics = result.value.data.results;
-        });
-      } else {
-        mainKey.currentState.showSnackBar(SnackBar(
-          content: Text(
-            (result as ErrorState).msg.message,
-          ),
-          duration: Duration(seconds: 4),
-        ));
-      }
-    });
-
-    NetworkClient().getEvents(widget.marvelId).then((result) {
-      if (result is SuccessState) {
-        setState(() {
-          _events = result.value.data.results;
-        });
-      } else {
-        mainKey.currentState.showSnackBar(SnackBar(
-          content: Text(
-            (result as ErrorState).msg.message,
-          ),
-          duration: Duration(seconds: 4),
-        ));
-      }
-    });
-
-    NetworkClient().getSeries(widget.marvelId).then((result) {
-      if (result is SuccessState) {
-        setState(() {
-          _series = result.value.data.results;
-        });
-      } else {
-        mainKey.currentState.showSnackBar(SnackBar(
-          content: Text(
-            (result as ErrorState).msg.message,
-          ),
-          duration: Duration(seconds: 4),
-        ));
-      }
-    });
-
-    NetworkClient().getStories(widget.marvelId).then((result) {
-      if (result is SuccessState) {
-        setState(() {
-          _stories = result.value.data.results;
-        });
-      } else {
-        mainKey.currentState.showSnackBar(SnackBar(
-          content: Text(
-            (result as ErrorState).msg.message,
-          ),
-          duration: Duration(seconds: 4),
-        ));
-      }
-    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    bloc.fetchComics(widget.marvelId);
+    bloc.fetchEvents(widget.marvelId);
+    bloc.fetchSeries(widget.marvelId);
+    bloc.fetchStories(widget.marvelId);
     return Scaffold(
       key: mainKey,
       body: ListView(
@@ -96,6 +44,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             children: [
               CachedNetworkImage(
                 height: 200,
+                width: MediaQuery.of(context).size.width,
                 imageUrl: widget.imagePath,
                 progressIndicatorBuilder: (context, url, downloadProgress) =>
                     Center(
@@ -104,6 +53,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 ),
                 errorWidget: (context, url, error) =>
                     Center(child: Icon(Icons.error)),
+                fit: BoxFit.cover,
               ),
               Container(
                 color: Colors.black26,
@@ -159,44 +109,116 @@ class _DetailsScreenState extends State<DetailsScreen> {
           DetailsHeader(
             name: 'COMICS',
           ),
-          _comics != null
-              ? RelatedDataWidget(relatedDataList: _comics)
-              : Container(
+          StreamBuilder(
+            stream: bloc.comics,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                _comics = snapshot.data.data.results;
+                return RelatedDataWidget(relatedDataList: _comics);
+              } else if (snapshot.hasError) {
+                return Container(
                   height: 100.0,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+                  child: Center(
+                    child: Text(
+                      (snapshot.error as ApiResponse<RelatedDataModel>).message,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                );
+              }
+
+              return Container(
+                height: 100.0,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            },
+          ),
           SizedBox(
             height: 16.0,
           ),
           DetailsHeader(
             name: 'SERIES',
           ),
-          _series != null
-              ? RelatedDataWidget(relatedDataList: _series)
-              : Container(
+          StreamBuilder(
+            stream: bloc.series,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                _series = snapshot.data.data.results;
+                return RelatedDataWidget(relatedDataList: _series);
+              } else if (snapshot.hasError) {
+                return Container(
                   height: 100.0,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+                  child: Center(
+                    child: Text(
+                      (snapshot.error as ApiResponse<RelatedDataModel>).message,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                );
+              }
+
+              return Container(
+                height: 100.0,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            },
+          ),
           SizedBox(
             height: 16.0,
           ),
           DetailsHeader(name: 'STORIES'),
-          _stories != null
-              ? RelatedDataWidget(relatedDataList: _stories)
-              : Container(
+          StreamBuilder(
+            stream: bloc.stories,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                _stories = snapshot.data.data.results;
+                return RelatedDataWidget(relatedDataList: _stories);
+              } else if (snapshot.hasError) {
+                return Container(
                   height: 100.0,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+                  child: Center(
+                    child: Text(
+                      (snapshot.error as ApiResponse<RelatedDataModel>).message,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                );
+              }
+
+              return Container(
+                height: 100.0,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            },
+          ),
           SizedBox(
             height: 16.0,
           ),
           DetailsHeader(name: 'EVENTS'),
-          _events != null
-              ? RelatedDataWidget(relatedDataList: _events)
-              : Container(
+          StreamBuilder(
+            stream: bloc.events,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                _events = snapshot.data.data.results;
+                return RelatedDataWidget(relatedDataList: _events);
+              } else if (snapshot.hasError) {
+                return Container(
                   height: 100.0,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+                  child: Center(
+                    child: Text(
+                      (snapshot.error as ApiResponse<RelatedDataModel>).message,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                );
+              }
+
+              return Container(
+                height: 100.0,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            },
+          ),
           SizedBox(
             height: 16.0,
           ),
@@ -209,11 +231,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
 class RelatedDataWidget extends StatelessWidget {
   const RelatedDataWidget({
     Key key,
-    @required List<RelatedDataResult> relatedDataList,
+    @required List<RelatedDataModel> relatedDataList,
   })  : _relatedDataList = relatedDataList,
         super(key: key);
 
-  final List<RelatedDataResult> _relatedDataList;
+  final List<RelatedDataModel> _relatedDataList;
 
   @override
   Widget build(BuildContext context) {
@@ -227,12 +249,13 @@ class RelatedDataWidget extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Container(
                     width: 100.0,
-                    padding: const EdgeInsets.only(left: 8.0, top: 16.0),
+                    padding: const EdgeInsets.only(
+                        left: 8.0, top: 16.0, bottom: 8.0),
                     child: Column(
                       children: [
                         CachedNetworkImage(
                           imageUrl: _relatedDataList[index].thumbnail != null
-                              ? "${_relatedDataList[index].thumbnail.path}/portrait_fantastic.${_relatedDataList[index].thumbnail.extension}"
+                              ? _relatedDataList[index].thumbnail
                               : "",
                           progressIndicatorBuilder:
                               (context, url, downloadProgress) => Center(
@@ -242,14 +265,20 @@ class RelatedDataWidget extends StatelessWidget {
                           errorWidget: (context, url, error) =>
                               Center(child: Icon(Icons.error)),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            _relatedDataList[index].title,
-                            style:
-                                TextStyle(fontSize: 14.0, color: Colors.white),
-                            softWrap: true,
-                            textAlign: TextAlign.center,
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Text(
+                                _relatedDataList[index].title,
+                                style: TextStyle(
+                                    fontSize: 14.0, color: Colors.white),
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
                         )
                       ],
