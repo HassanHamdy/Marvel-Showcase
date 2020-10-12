@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:movies_showcase/models/api_response.dart';
-import 'file:///D:/marvel/marvel-showcase/lib/models/related_data_model.dart';
+import 'package:movies_showcase/models/related_data_model.dart';
 import 'package:movies_showcase/services/bloc.dart';
 
 class DetailsScreen extends StatefulWidget {

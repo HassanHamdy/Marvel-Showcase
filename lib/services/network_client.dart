@@ -4,8 +4,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show Client;
 import 'package:movies_showcase/models/api_response.dart';
-import 'file:///D:/marvel/marvel-showcase/lib/models/character_model.dart';
-import 'file:///D:/marvel/marvel-showcase/lib/models/related_data_model.dart';
+import 'package:movies_showcase/models/character_model.dart';
+import 'package:movies_showcase/models/related_data_model.dart';
+import 'package:movies_showcase/models/related_data_types.dart';
 
 final String _ts = "11",
     _apiKey = "f8d127d63cd8edb9c1033cc71ab185d8",
@@ -56,10 +57,12 @@ class NetworkClient {
   }
 
   Future<ApiResponse<RelatedDataModel>> getCharacterRelatedData(
-      int characterId, String type) async {
+      int characterId, RelatedDataTypes type) async {
     try {
       final response = await _request(
-          requestType: RequestType.GET, path: "characters/$characterId/$type");
+          requestType: RequestType.GET,
+          path:
+              "characters/$characterId/${RelatedDataTypesHelper.getValue(type)}");
       return ApiResponse<RelatedDataModel>.fromJson(json.decode(response.body));
     } catch (error) {
       print("ERROR $error");

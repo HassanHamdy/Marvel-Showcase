@@ -1,5 +1,6 @@
-import 'file:///D:/marvel/marvel-showcase/lib/models/character_model.dart';
-import 'file:///D:/marvel/marvel-showcase/lib/models/related_data_model.dart';
+import 'package:movies_showcase/models/related_data_model.dart';
+
+import 'character_model.dart';
 
 class ApiDataResponse<T> {
   int offset;
@@ -12,6 +13,7 @@ class ApiDataResponse<T> {
       {this.offset, this.limit, this.total, this.count, this.results});
 
   ApiDataResponse.fromJson(Map<String, dynamic> json) {
+    print(T.runtimeType);
     offset = json['offset'];
     limit = json['limit'];
     total = json['total'];

@@ -9,6 +9,7 @@ class ApiResponse<T> {
   ApiResponse({this.code, this.status, this.data, this.message});
 
   ApiResponse.fromJson(Map<String, dynamic> json) {
+    print(T.runtimeType);
     code = json['code'];
     status = json['status'];
     message = json['message'];

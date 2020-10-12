@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movies_showcase/models/api_response.dart';
-import 'file:///D:/marvel/marvel-showcase/lib/models/character_model.dart';
+import 'package:movies_showcase/models/character_model.dart';
 import 'package:movies_showcase/services/bloc.dart';
 import 'package:movies_showcase/screens/details_screen.dart';
 
@@ -13,6 +13,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final mainKey = GlobalKey<ScaffoldState>();
   List<CharacterModel> _characters;
+
 
   @override
   Widget build(BuildContext context) {
