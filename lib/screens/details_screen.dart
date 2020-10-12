@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:movies_showcase/models/api_response.dart';
-import 'package:movies_showcase/models/related_data_model/related_data_model.dart';
+import 'file:///D:/marvel/marvel-showcase/lib/models/related_data_model.dart';
 import 'package:movies_showcase/services/bloc.dart';
-import 'package:movies_showcase/services/network_client.dart';
-import 'package:movies_showcase/services/result.dart';
 
 class DetailsScreen extends StatefulWidget {
   final int marvelId;

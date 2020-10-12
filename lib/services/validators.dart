@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:movies_showcase/models/api_response.dart';
-import 'package:movies_showcase/models/character_model/character_model.dart';
-import 'package:movies_showcase/models/related_data_model/related_data_model.dart';
+import 'file:///D:/marvel/marvel-showcase/lib/models/character_model.dart';
+import 'file:///D:/marvel/marvel-showcase/lib/models/related_data_model.dart';
 
 class Validators {
   final characterResponseSuccess = StreamTransformer<

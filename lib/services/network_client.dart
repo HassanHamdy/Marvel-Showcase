@@ -4,11 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show Client;
 import 'package:movies_showcase/models/api_response.dart';
-import 'package:movies_showcase/models/character_model/character_model.dart';
-import 'package:movies_showcase/models/related_data_model/related_data_model.dart';
-
-import '../models/error_response.dart';
-import 'result.dart';
+import 'file:///D:/marvel/marvel-showcase/lib/models/character_model.dart';
+import 'file:///D:/marvel/marvel-showcase/lib/models/related_data_model.dart';
 
 final String _ts = "11",
     _apiKey = "f8d127d63cd8edb9c1033cc71ab185d8",

@@ -1,5 +1,3 @@
-import '../thumbnail.dart';
-
 class RelatedDataModel {
   int id;
   String title;

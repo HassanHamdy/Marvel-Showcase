@@ -1,6 +1,6 @@
 import 'package:movies_showcase/models/api_data_response.dart';
 
-class ApiResponse <T>{
+class ApiResponse<T> {
   dynamic code;
   String status;
   String message;
