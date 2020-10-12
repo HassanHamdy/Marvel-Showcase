@@ -5,15 +5,8 @@ import 'package:movies_showcase/models/character_model.dart';
 import 'package:movies_showcase/services/bloc.dart';
 import 'package:movies_showcase/screens/details_screen.dart';
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePage extends StatelessWidget {
   final mainKey = GlobalKey<ScaffoldState>();
-  List<CharacterModel> _characters;
-
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
           stream: bloc.characters,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              _characters = snapshot.data.data.results;
+              List<CharacterModel> _characters = snapshot.data.data.results;
               return ListView.builder(
                 scrollDirection: Axis.vertical,
                 itemCount: _characters.length,

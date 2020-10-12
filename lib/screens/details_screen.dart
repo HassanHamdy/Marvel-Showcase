@@ -7,33 +7,21 @@ import 'package:movies_showcase/models/api_response.dart';
 import 'package:movies_showcase/models/related_data_model.dart';
 import 'package:movies_showcase/services/bloc.dart';
 
-class DetailsScreen extends StatefulWidget {
+class DetailsScreen extends StatelessWidget {
+  final mainKey = GlobalKey<ScaffoldState>();
   final int marvelId;
   final String name, description, imagePath;
 
-  const DetailsScreen(
+  DetailsScreen(
       {Key key, this.marvelId, this.name, this.description, this.imagePath})
       : super(key: key);
 
   @override
-  _DetailsScreenState createState() => _DetailsScreenState();
-}
-
-class _DetailsScreenState extends State<DetailsScreen> {
-  final mainKey = GlobalKey<ScaffoldState>();
-  List<RelatedDataModel> _comics, _events, _series, _stories;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    bloc.fetchComics(widget.marvelId);
-    bloc.fetchEvents(widget.marvelId);
-    bloc.fetchSeries(widget.marvelId);
-    bloc.fetchStories(widget.marvelId);
+    bloc.fetchComics(marvelId);
+    bloc.fetchEvents(marvelId);
+    bloc.fetchSeries(marvelId);
+    bloc.fetchStories(marvelId);
     return Scaffold(
       key: mainKey,
       body: ListView(
@@ -43,7 +31,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
               CachedNetworkImage(
                 height: 200,
                 width: MediaQuery.of(context).size.width,
-                imageUrl: widget.imagePath,
+                imageUrl: imagePath,
                 progressIndicatorBuilder: (context, url, downloadProgress) =>
                     Center(
                   child: CircularProgressIndicator(
@@ -80,7 +68,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              widget.name,
+              name,
               style: TextStyle(fontSize: 18.0, color: Colors.white),
             ),
           ),
@@ -88,15 +76,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
             height: 16.0,
           ),
           Visibility(
-            visible: widget.description.isNotEmpty,
+            visible: description.isNotEmpty,
             child: DetailsHeader(name: 'DESCRIPTION'),
           ),
           Visibility(
-            visible: widget.description.isNotEmpty,
+            visible: description.isNotEmpty,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                widget.description,
+                description,
                 style: TextStyle(fontSize: 18.0, color: Colors.white),
               ),
             ),
@@ -111,7 +99,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             stream: bloc.comics,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                _comics = snapshot.data.data.results;
+                List<RelatedDataModel> _comics = snapshot.data.data.results;
                 return RelatedDataWidget(relatedDataList: _comics);
               } else if (snapshot.hasError) {
                 return Container(
@@ -141,7 +129,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             stream: bloc.series,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                _series = snapshot.data.data.results;
+                List<RelatedDataModel> _series = snapshot.data.data.results;
                 return RelatedDataWidget(relatedDataList: _series);
               } else if (snapshot.hasError) {
                 return Container(
@@ -169,7 +157,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             stream: bloc.stories,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                _stories = snapshot.data.data.results;
+                List<RelatedDataModel> _stories = snapshot.data.data.results;
                 return RelatedDataWidget(relatedDataList: _stories);
               } else if (snapshot.hasError) {
                 return Container(
@@ -197,7 +185,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             stream: bloc.events,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                _events = snapshot.data.data.results;
+                List<RelatedDataModel> _events = snapshot.data.data.results;
                 return RelatedDataWidget(relatedDataList: _events);
               } else if (snapshot.hasError) {
                 return Container(
